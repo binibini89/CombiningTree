@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <pthread.h>
 #define INFI 256
+struct Args
+{
+	int id;
+};
 
 class Node // Combinning Tree Node Class
 {
@@ -74,6 +78,6 @@ public:
 			leaf[i] = new Node(nodes[width - i -2]);
 		}
 	}
-	int getAndIncrement(void *id);
+	int getAndIncrement(int id);
 };
 
