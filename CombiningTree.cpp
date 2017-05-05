@@ -138,7 +138,7 @@ int Node::op(int combined)
 			cout << "op unexpected Node state " << cStatus<< endl;
 			op_unlock();
 			return -1;
-				 }
+		}
 	}
 }
 
@@ -165,6 +165,7 @@ void Node::distribute(int prior)
 int CombiningTree::getAndIncrement(int my_id)
 {
 	stack<Node *> path;
+//	cout << "my id is " << my_id <<endl;
 	Node *myleaf = leaf[my_id / 2];
 	Node *node = myleaf;
 	while(node->precombine()) {
@@ -196,9 +197,10 @@ void *GetandInc_wapper(void * ptr)
 	struct Args *arg = (struct Args *)ptr;
 
 	int ret;
-	for(int i = 0; i < 100; i++) {
+	for(int i = 0; i < 1000000; i++) {
 		ret = ctree.getAndIncrement(arg->id);
 	}
+	cout << "thread " << arg->id << " is out " << endl;
 	return NULL;
 }
 

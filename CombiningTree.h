@@ -31,6 +31,8 @@ public:
 	//condition veriable for waiting on this node
 	pthread_cond_t cond;
 
+	int id;
+
 	Node() {
 		cStatus = ROOT;
 		locked = false;
@@ -85,11 +87,13 @@ public:
 public:
 	CombiningTree(int width) {
 		nodes[0] = new Node();
+		nodes[0]->id = 0;
 		for(int i = 1; i < width-1 ; i++) {
 			nodes[i] = new Node(nodes[(i-1)/2]);
+			nodes[i]->id = i;
 		}
 		for (int i = 0; i < (width + 1)/2; i++) {
-			leaf[i] =nodes[width - i -2];
+			leaf[(width+1)/2 - i -1] =nodes[width - i -2];
 		}
 	}
 	int getAndIncrement(int id);
