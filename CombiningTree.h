@@ -13,15 +13,23 @@ class Node // Combinning Tree Node Class
 {
 public:
 	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};
-	volatile bool locked;
+	bool locked;
 	CStatus cStatus;
 	int firstValue, secondValue;
 	int result;
 	Node *Parent;
+	//for sync of precombine on this node
 	pthread_mutex_t precombinelock;
+	//for sync of combine on this node
 	pthread_mutex_t combinelock;
+	//for sync of op on this node
 	pthread_mutex_t oplock;
+	//for sync of distribute on this node
 	pthread_mutex_t distributelock;
+	//for protect the condition veriable
+	pthread_mutex_t cond_mutex;
+	//condition veriable for waiting on this node
+	pthread_cond_t cond;
 
 	Node() {
 		cStatus = ROOT;
@@ -34,6 +42,8 @@ public:
 		pthread_mutex_init(&combinelock, NULL);
 		pthread_mutex_init(&oplock, NULL);
 		pthread_mutex_init(&distributelock, NULL);
+		pthread_mutex_init(&cond_mutex, NULL);
+		pthread_cond_init(&cond, NULL);
 	}
 
 	Node(Node *myParent) {
@@ -47,6 +57,8 @@ public:
 		pthread_mutex_init(&combinelock, NULL);
 		pthread_mutex_init(&oplock, NULL);
 		pthread_mutex_init(&distributelock, NULL);
+		pthread_mutex_init(&cond_mutex, NULL);
+		pthread_cond_init(&cond, NULL);
 	}
 
 	bool precombine();
@@ -61,6 +73,8 @@ public:
 	void op_unlock();
 	void distribute_lock();
 	void distribute_unlock();
+	void wait();
+	void notify_all();
 };
 
 class CombiningTree

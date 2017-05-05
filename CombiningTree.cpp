@@ -1,9 +1,9 @@
-#include "CombinningTree.h"
+#include "CombiningTree.h"
 #include <stack>
 #include <thread>
 #include <unistd.h>
 
-#define NUM_THREAD 128
+#define NUM_THREAD 8
 using namespace std;
 CombiningTree ctree(NUM_THREAD);
 
@@ -44,6 +44,20 @@ void Node::distribute_lock()
 void Node::distribute_unlock()
 {
 	pthread_mutex_unlock(&distributelock);
+}
+
+void Node::wait()
+{
+	pthread_mutex_lock(&cond_mutex);
+	pthread_cond_wait(&cond, &cond_mutex);
+	pthread_mutex_unlock(&cond_mutex);
+}
+
+void Node::notify_all()
+{
+	pthread_mutex_lock(&cond_mutex);
+	pthread_cond_broadcast(&cond);
+	pthread_mutex_unlock(&cond_mutex);
 }
 
 bool Node::precombine()
@@ -99,7 +113,7 @@ int Node::op(int combined)
 			result += combined;
 			op_unlock();
 			return prior;
-				  }
+			}
 		case SECOND: {
 			secondValue = combined;
 			locked = false;
@@ -171,7 +185,7 @@ void *GetandInc_wapper(void * ptr)
 	struct Args *arg = (struct Args *)ptr;
 
 	int ret;
-	for(int i = 0; i < 1; i++) {
+	for(int i = 0; i < 1000; i++) {
 		ret = ctree.getAndIncrement(arg->id);
 		usleep(100);
 	//	cout << " Thread  " << arg->id << " get "  << ret << endl;
