@@ -3,7 +3,7 @@
 #include <thread>
 #include <unistd.h>
 
-#define NUM_THREAD 8
+#define NUM_THREAD 4
 using namespace std;
 CombiningTree ctree(NUM_THREAD);
 
@@ -63,7 +63,10 @@ void Node::notify_all()
 bool Node::precombine()
 {
 	precombine_lock();
-	while(locked) {}
+	while(locked) {
+		cout << "gona wait here in precombine" << endl;
+		wait();	
+	}
 	switch(cStatus) {
 		case IDLE:
 			cStatus = FIRST;
@@ -87,7 +90,10 @@ bool Node::precombine()
 int Node::combine(int combined)
 {
 	combine_lock();	
-	while(locked) {}
+	while(locked) {
+		cout << "gona wait here in combine" << endl;
+		wait();	
+	}
 	locked = true;
 	firstValue = combined;
 	switch(cStatus) {
@@ -117,8 +123,13 @@ int Node::op(int combined)
 		case SECOND: {
 			secondValue = combined;
 			locked = false;
-			while(cStatus != RESULT) {}
+			notify_all();
+			while(cStatus != RESULT) {
+				cout << "gona wait here in op" << endl;
+				wait();	
+			}
 			locked = false;
+			notify_all();
 			cStatus = IDLE;
 			op_unlock();
 			return result;
@@ -145,9 +156,9 @@ void Node::distribute(int prior)
 			break;
 		default:
 			cout << "distribute unexpected node state " << endl;
-			distribute_unlock();
-			return (void)0;
+			break;
 	}
+	notify_all();
 	distribute_unlock();
 }
 
@@ -185,10 +196,8 @@ void *GetandInc_wapper(void * ptr)
 	struct Args *arg = (struct Args *)ptr;
 
 	int ret;
-	for(int i = 0; i < 1000; i++) {
+	for(int i = 0; i < 10; i++) {
 		ret = ctree.getAndIncrement(arg->id);
-		usleep(100);
-	//	cout << " Thread  " << arg->id << " get "  << ret << endl;
 	}
 	return NULL;
 }
