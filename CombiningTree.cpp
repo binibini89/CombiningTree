@@ -5,7 +5,7 @@
 
 #define NUM_THREAD 4
 using namespace std;
-CombiningTree ctree(NUM_THREAD);
+CombiningTree ctree(2*NUM_THREAD);
 
 void Node::precombine_lock()
 {
@@ -196,7 +196,7 @@ void *GetandInc_wapper(void * ptr)
 	struct Args *arg = (struct Args *)ptr;
 
 	int ret;
-	for(int i = 0; i < 10; i++) {
+	for(int i = 0; i < 100; i++) {
 		ret = ctree.getAndIncrement(arg->id);
 	}
 	return NULL;

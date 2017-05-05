@@ -85,11 +85,11 @@ public:
 public:
 	CombiningTree(int width) {
 		nodes[0] = new Node();
-		for(int i = 1; i < width; i++) {
+		for(int i = 1; i < width-1 ; i++) {
 			nodes[i] = new Node(nodes[(i-1)/2]);
 		}
 		for (int i = 0; i < (width + 1)/2; i++) {
-			leaf[i] = new Node(nodes[width - i -2]);
+			leaf[i] =nodes[width - i -2];
 		}
 	}
 	int getAndIncrement(int id);
