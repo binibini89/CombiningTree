@@ -3,6 +3,8 @@
 #include <condition_variable>
 #include <stdlib.h>
 #include <pthread.h>
+#include <atomic>
+
 #define INFI 256
 struct Args
 {
@@ -16,23 +18,11 @@ class Node // Combinning Tree Node Class
 public:
 
 	bool locked;
-	volatile CStatus cStatus;
+	CStatus cStatus;
 	int firstValue, secondValue;
 	int result;
 	Node *Parent;
-	//for sync of precombine on this node
-	pthread_mutex_t precombinelock;
-	//for sync of combine on this node
-	pthread_mutex_t combinelock;
-	//for sync of op on this node
-	pthread_mutex_t oplock;
-	//for sync of distribute on this node
-	pthread_mutex_t distributelock;
-	//for protect the condition veriable
-	pthread_mutex_t cond_mutex;
-	//for protect the condition veriable when result is changed
-	pthread_mutex_t cond_mutex_result;
-	//condition veriable for waiting on this node
+	pthread_mutex_t nodelock;
 	pthread_cond_t cond;
 	pthread_cond_t cond_result;
 
@@ -45,12 +35,7 @@ public:
 		firstValue = 0;
 		secondValue = 0;
 		result = 0;
-		pthread_mutex_init(&precombinelock, NULL);
-		pthread_mutex_init(&combinelock, NULL);
-		pthread_mutex_init(&oplock, NULL);
-		pthread_mutex_init(&distributelock, NULL);
-		pthread_mutex_init(&cond_mutex, NULL);
-		pthread_mutex_init(&cond_mutex_result, NULL);
+		pthread_mutex_init(&nodelock, NULL);
 		pthread_cond_init(&cond, NULL);
 		pthread_cond_init(&cond_result, NULL);
 	}
@@ -62,12 +47,7 @@ public:
 		firstValue = 0;
 		secondValue = 0;
 		result = 0;
-		pthread_mutex_init(&precombinelock, NULL);
-		pthread_mutex_init(&combinelock, NULL);
-		pthread_mutex_init(&oplock, NULL);
-		pthread_mutex_init(&distributelock, NULL);
-		pthread_mutex_init(&cond_mutex, NULL);
-		pthread_mutex_init(&cond_mutex_result, NULL);
+		pthread_mutex_init(&nodelock, NULL);
 		pthread_cond_init(&cond, NULL);
 		pthread_cond_init(&cond_result, NULL);
 	}
@@ -76,16 +56,10 @@ public:
 	int combine(int combined);
 	int op(int combined);
 	void distribute(int prior);
-	void precombine_lock();
-	void precombine_unlock();
-	void combine_lock();
-	void combine_unlock();
-	void op_lock();
-	void op_unlock();
-	void distribute_lock();
-	void distribute_unlock();
 	void wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
 	void notify_all(pthread_cond_t *cond);
+	void node_lock();
+	void node_unlock();
 };
 
 class CombiningTree

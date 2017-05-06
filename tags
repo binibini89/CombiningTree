@@ -5,21 +5,21 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 Args	CombiningTree.h	/^struct Args$/;"	s
-CStatus	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	g	class:Node
+CStatus	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	g
 CombiningTree	CombiningTree.h	/^	CombiningTree(int width) {$/;"	f	class:CombiningTree
 CombiningTree	CombiningTree.h	/^class CombiningTree$/;"	c
-FIRST	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:Node::CStatus
+FIRST	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:CStatus
 GetandInc_wapper	CombiningTree.cpp	/^void *GetandInc_wapper(void * ptr)$/;"	f
-IDLE	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:Node::CStatus
-INFI	CombiningTree.h	6;"	d
-NUM_THREAD	CombiningTree.cpp	6;"	d	file:
+IDLE	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:CStatus
+INFI	CombiningTree.h	8;"	d
+NUM_THREAD	CombiningTree.cpp	5;"	d	file:
 Node	CombiningTree.h	/^	Node() {$/;"	f	class:Node
 Node	CombiningTree.h	/^	Node(Node *myParent) {$/;"	f	class:Node
 Node	CombiningTree.h	/^class Node \/\/ Combinning Tree Node Class$/;"	c
 Parent	CombiningTree.h	/^	Node *Parent;$/;"	m	class:Node
-RESULT	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:Node::CStatus
-ROOT	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:Node::CStatus
-SECOND	CombiningTree.h	/^	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:Node::CStatus
+RESULT	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:CStatus
+ROOT	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:CStatus
+SECOND	CombiningTree.h	/^enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};$/;"	e	enum:CStatus
 cStatus	CombiningTree.h	/^	CStatus cStatus;$/;"	m	class:Node
 combine	CombiningTree.cpp	/^int Node::combine(int combined)$/;"	f	class:Node
 combine_lock	CombiningTree.cpp	/^void Node::combine_lock()$/;"	f	class:Node
@@ -27,6 +27,9 @@ combine_unlock	CombiningTree.cpp	/^void Node::combine_unlock()$/;"	f	class:Node
 combinelock	CombiningTree.h	/^	pthread_mutex_t combinelock;$/;"	m	class:Node
 cond	CombiningTree.h	/^	pthread_cond_t cond;$/;"	m	class:Node
 cond_mutex	CombiningTree.h	/^	pthread_mutex_t cond_mutex;$/;"	m	class:Node
+cond_mutex_result	CombiningTree.h	/^	pthread_mutex_t cond_mutex_result;$/;"	m	class:Node
+cond_result	CombiningTree.h	/^	pthread_cond_t cond_result;$/;"	m	class:Node
+cstatus_lock	CombiningTree.h	/^	pthread_mutex_t cstatus_lock;$/;"	m	class:Node
 distribute	CombiningTree.cpp	/^void Node::distribute(int prior)$/;"	f	class:Node
 distribute_lock	CombiningTree.cpp	/^void Node::distribute_lock()$/;"	f	class:Node
 distribute_unlock	CombiningTree.cpp	/^void Node::distribute_unlock()$/;"	f	class:Node
@@ -38,8 +41,10 @@ id	CombiningTree.h	/^	int id;$/;"	m	struct:Args
 leaf	CombiningTree.h	/^	Node *leaf[INFI];  \/\/head of leaf nodes $/;"	m	class:CombiningTree
 locked	CombiningTree.h	/^	bool locked;$/;"	m	class:Node
 main	CombiningTree.cpp	/^int main()$/;"	f
+node_lock	CombiningTree.cpp	/^void Node::node_lock()$/;"	f	class:Node
+node_lock	CombiningTree.h	/^	pthread_mutex_t node_lock;$/;"	m	class:Node
 nodes	CombiningTree.h	/^	Node *nodes[INFI]; \/\/head of internal nodes $/;"	m	class:CombiningTree
-notify_all	CombiningTree.cpp	/^void Node::notify_all()$/;"	f	class:Node
+notify_all	CombiningTree.cpp	/^void Node::notify_all(pthread_cond_t *cond)$/;"	f	class:Node
 op	CombiningTree.cpp	/^int Node::op(int combined)$/;"	f	class:Node
 op_lock	CombiningTree.cpp	/^void Node::op_lock()$/;"	f	class:Node
 op_unlock	CombiningTree.cpp	/^void Node::op_unlock()$/;"	f	class:Node
@@ -50,4 +55,5 @@ precombine_unlock	CombiningTree.cpp	/^void Node::precombine_unlock()$/;"	f	class
 precombinelock	CombiningTree.h	/^	pthread_mutex_t precombinelock;$/;"	m	class:Node
 result	CombiningTree.h	/^	int result;$/;"	m	class:Node
 secondValue	CombiningTree.h	/^	int firstValue, secondValue;$/;"	m	class:Node
-wait	CombiningTree.cpp	/^void Node::wait()$/;"	f	class:Node
+sleep	CombiningTree.cpp	/^void sleep(int intense)$/;"	f
+wait	CombiningTree.cpp	/^void Node::wait(pthread_cond_t *cond, pthread_mutex_t *cond_mutex)$/;"	f	class:Node
