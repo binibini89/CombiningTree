@@ -9,12 +9,14 @@ struct Args
 	int id;
 };
 
+enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};
+
 class Node // Combinning Tree Node Class
 {
 public:
-	enum CStatus {IDLE, FIRST, SECOND, RESULT, ROOT};
+
 	bool locked;
-	CStatus cStatus;
+	volatile CStatus cStatus;
 	int firstValue, secondValue;
 	int result;
 	Node *Parent;
@@ -28,8 +30,11 @@ public:
 	pthread_mutex_t distributelock;
 	//for protect the condition veriable
 	pthread_mutex_t cond_mutex;
+	//for protect the condition veriable when result is changed
+	pthread_mutex_t cond_mutex_result;
 	//condition veriable for waiting on this node
 	pthread_cond_t cond;
+	pthread_cond_t cond_result;
 
 	int id;
 
@@ -45,7 +50,9 @@ public:
 		pthread_mutex_init(&oplock, NULL);
 		pthread_mutex_init(&distributelock, NULL);
 		pthread_mutex_init(&cond_mutex, NULL);
+		pthread_mutex_init(&cond_mutex_result, NULL);
 		pthread_cond_init(&cond, NULL);
+		pthread_cond_init(&cond_result, NULL);
 	}
 
 	Node(Node *myParent) {
@@ -60,7 +67,9 @@ public:
 		pthread_mutex_init(&oplock, NULL);
 		pthread_mutex_init(&distributelock, NULL);
 		pthread_mutex_init(&cond_mutex, NULL);
+		pthread_mutex_init(&cond_mutex_result, NULL);
 		pthread_cond_init(&cond, NULL);
+		pthread_cond_init(&cond_result, NULL);
 	}
 
 	bool precombine();
@@ -75,8 +84,8 @@ public:
 	void op_unlock();
 	void distribute_lock();
 	void distribute_unlock();
-	void wait();
-	void notify_all();
+	void wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
+	void notify_all(pthread_cond_t *cond);
 };
 
 class CombiningTree

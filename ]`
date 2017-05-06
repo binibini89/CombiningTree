@@ -3,7 +3,7 @@
 #include <thread>
 #include <unistd.h>
 
-#define NUM_THREAD 3
+#define NUM_THREAD 2
 //#define DEBUG
 using namespace std;
 CombiningTree ctree(2*NUM_THREAD);
@@ -64,14 +64,13 @@ void Node::notify_all(pthread_cond_t *cond)
 bool Node::precombine()
 {
 	precombine_lock();
-
-//	while(cStatus == RESULT) {}
+	cout << " precombine on node " << this->id << " cStatus is  " << cStatus<< endl;
+	while(cStatus == RESULT) {}
 	pthread_mutex_lock(&cond_mutex);
 	while(locked) {
 		wait(&cond, &cond_mutex);	
 	}
 	pthread_mutex_unlock(&cond_mutex);
-	while(cStatus == RESULT) {}
 	switch(cStatus) {
 		case IDLE:
 			cStatus = FIRST;
@@ -149,8 +148,8 @@ int Node::op(int combined)
 						 pthread_mutex_lock(&cond_mutex);
 						 locked = false;
 						 notify_all(&cond);
-						 cStatus = IDLE;
 						 pthread_mutex_unlock(&cond_mutex);
+						 cStatus = IDLE;
 						 op_unlock();
 						 return result;
 					 }
@@ -181,7 +180,7 @@ void Node::distribute(int prior)
 			pthread_mutex_lock(&cond_mutex_result);
 			cStatus = RESULT;
 			notify_all(&cond_result);
-#ifdef DEBUG
+#if DEBUG
 			cout <<"change node " << this->id << "state to RESULT" << endl;
 #endif
 			pthread_mutex_unlock(&cond_mutex_result);
